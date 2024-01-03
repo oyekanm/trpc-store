@@ -11,8 +11,9 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerAuthSession } from "~/server/auth";
-import { db } from "~/server/db";
+import { db } from "@/server/db";
+import { getServerAuthSession } from "@/lib/session";
+import { currentUser } from "@clerk/nextjs";
 
 /**
  * 1. CONTEXT
@@ -27,11 +28,19 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await getServerAuthSession();
+  // const session = await currentUser()
+
+  // const user ={
+  //   id:session?.id,
+  //   name:session?.firstName,
+  //   image:session?.imageUrl,
+  //   email:session?.emailAddresses[0]?.emailAddress
+  // }
+
 
   return {
     db,
-    session,
+    // user,
     ...opts,
   };
 };
@@ -82,15 +91,12 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
+  // if (!ctx || !ctx.user) {
+  //   throw new TRPCError({ code: "UNAUTHORIZED"});
+  // }
+  // console.log(ctx, "hello");
+  
+  return next();
 });
 
 /**
