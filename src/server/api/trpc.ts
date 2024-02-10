@@ -12,7 +12,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
-import { getServerAuthSession } from "@/lib/session";
+import { getServerAuthSession } from "@/libs/session";
 import { currentUser } from "@clerk/nextjs";
 
 /**

@@ -39,6 +39,20 @@ function SideBar() {
                     </li>
 
                 </Link>
+                <Link href={`/${home}/collections`} className={link}>
+                <Boxes />
+                    <li>
+                        Orders
+                    </li>
+
+                </Link>
+                <Link href={`/${home}/collections`} className={link}>
+                <Boxes />
+                    <li>
+                        Transactions
+                    </li>
+
+                </Link>
                 {/* <Link href={`${home}/`} className={link}>
                     Product
                 </Link> */}

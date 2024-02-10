@@ -28,14 +28,30 @@ model Collection {
 }
 
 // Necessary for Next auth
+
+enum UploadStatus {
+    PENDING
+    PROCESSING
+    FAILED
+    SUCCESS
+}
+
+enum OrderStatus {
+    PENDING
+    FAILED
+    COMPLETED
+}
+
 model Product {
-    id          String   @id @default(cuid())
-    title       String
-    price       Int
-    image       Image[]
-    description String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id           String       @id @default(cuid())
+    title        String
+    price        Int
+    image        Image[]
+    description  String
+    uploadStatus UploadStatus @default(PENDING)
+    currency     String
+    createdAt    DateTime     @default(now())
+    updatedAt    DateTime     @updatedAt
 
     CollectionType   CollectionType? @relation(fields: [collectionTypeId], references: [id])
     collectionTypeId String?
@@ -69,15 +85,25 @@ model Category {
 }
 
 model Image {
-    id        String   @id @default(cuid())
-    url       String[]
-    key       String
+    id        String     @id @default(cuid())
+    file      ImageUrl[]
     color     String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
 
     Product   Product? @relation(fields: [productId], references: [id])
     productId String?
+}
+
+model ImageUrl {
+    id        String   @id @default(cuid())
+    url       String   @unique
+    key       String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Image     Image?   @relation(fields: [imageId], references: [id])
+    imageId   String?
 }
 
 // model Account {

@@ -7,46 +7,56 @@ import {
 } from "@/server/api/trpc";
 
 export const productRouter = createTRPCRouter({
-  getProduct: publicProcedure
-    .query(async({ ctx }) => {
-      return await ctx.db.product.findMany()
+  getProduct: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.product.findMany({
+      include: { CollectionType: { select: { name: true } }, image: true },
+    });
+  }),
+
+  createProduct: protectedProcedure
+    .input(
+      z.object({
+        title: z.string().min(3),
+        description: z.string().min(10),
+        price: z.number().min(1),
+        collectionTypeId: z?.string()?.min(1).optional(),
+        currency: z.string().min(3),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.product.create({
+        data: {
+          title: input.title,
+          description: input.description,
+          price: input.price,
+          collectionTypeId: input.collectionTypeId,
+          currency: input.currency,
+        },
+      });
     }),
 
-    createProduct:protectedProcedure
-    .input(z.object({ title: z.string().min(3), description:z.string().min(10), price:z.number().min(1), collectionTypeId:z?.string()?.min(1).optional() }))
-    .mutation(async({ctx, input})=>{
-        return await ctx.db.product.create({
-            data: {
-                title:input.title,
-                description:input.description,
-                price:input.price,
-                collectionTypeId:input.collectionTypeId,
-            }
-        })
-    })
+  //   create: protectedProcedure
+  //     .input(z.object({ name: z.string().min(1) }))
+  //     .mutation(async ({ ctx, input }) => {
+  //       // simulate a slow db call
+  //       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-//   create: protectedProcedure
-//     .input(z.object({ name: z.string().min(1) }))
-//     .mutation(async ({ ctx, input }) => {
-//       // simulate a slow db call
-//       await new Promise((resolve) => setTimeout(resolve, 1000));
+  //       return ctx.db.post.create({
+  //         data: {
+  //           name: input.name,
+  //           createdBy: { connect: { id: ctx.session.user.id } },
+  //         },
+  //       });
+  //     }),
 
-//       return ctx.db.post.create({
-//         data: {
-//           name: input.name,
-//           createdBy: { connect: { id: ctx.session.user.id } },
-//         },
-//       });
-//     }),
+  //   getLatest: protectedProcedure.query(({ ctx }) => {
+  //     return ctx.db.post.findFirst({
+  //       orderBy: { createdAt: "desc" },
+  //       where: { createdBy: { id: ctx.session.user.id } },
+  //     });
+  //   }),
 
-//   getLatest: protectedProcedure.query(({ ctx }) => {
-//     return ctx.db.post.findFirst({
-//       orderBy: { createdAt: "desc" },
-//       where: { createdBy: { id: ctx.session.user.id } },
-//     });
-//   }),
-
-//   getSecretMessage: protectedProcedure.query(() => {
-//     return "you can now see this secret message!";
-//   }),
+  //   getSecretMessage: protectedProcedure.query(() => {
+  //     return "you can now see this secret message!";
+  //   }),
 });

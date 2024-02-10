@@ -58,16 +58,27 @@ export const userInputs = [
       name:"description"
     },
     {
-      id: 4,
+      id: 3,
       label: "Price",
       type: "number",
       placeholder: "100",
       name:"price"
     },
-    // {
-    //   id: 5,
-    //   label: "Stock",
-    //   type: "text",
-    //   placeholder: "in stock",
-    // },
+    {
+      id: 4,
+      label: "Currency",
+      type: "text",
+      placeholder: "Naira",
+      name:"currency"
+    },
+  ];
+  export const imageInputs = [
+    {
+      id: 1,
+      label: "Color",
+      type: "text",
+      placeholder: "eg. red, green",
+      name:"color"
+    },
+   
   ];

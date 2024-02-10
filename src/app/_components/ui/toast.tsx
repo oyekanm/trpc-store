@@ -1,12 +1,25 @@
-import { cn } from '@/lib/utils'
-import React from 'react'
+import { useToast } from '@/components/ui/use-toast'
+import { cn } from '@/libs/utils'
+import { X } from 'lucide-react'
+import React, { useEffect } from 'react'
 
-export default function Toast({className}:{className?:string}) {
-  return (
-    <div className="toast">
-  <div className={cn("alert alert-info ",className)}>
-    <span>New message arrived.</span>
-  </div>
-</div>
-  )
+type Props = { title: string, description: string,}
+
+export default function Toast({ title,description }: Props) {
+
+  const {toast} = useToast()
+
+  useEffect(()=>{
+    toast({
+      title,
+      description
+    })
+  }, [])
+ 
+
+  // return toast({
+  //         title,
+  //         description
+  //       })
+  
 }

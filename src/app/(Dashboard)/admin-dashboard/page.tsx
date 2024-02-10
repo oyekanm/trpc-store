@@ -1,5 +1,6 @@
 
-import { getServerAuthSession } from '@/lib/session'
+import Chart from '@/app/_components/charts'
+import { getServerAuthSession } from '@/libs/session'
 import { db } from '@/server/db'
 // import { api } from '@/trpc/react'
 import { api } from '@/trpc/server'
@@ -37,7 +38,9 @@ async function page() {
     // }
 
     return (
-        <div className='text-slate-900 font-bold text-lg'>page</div>
+        <div className='text-slate-900 font-bold text-lg'>
+            <Chart title='Last Months' aspect={2/1}/>
+        </div>
     )
 }
 
