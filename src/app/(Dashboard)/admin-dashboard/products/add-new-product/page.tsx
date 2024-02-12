@@ -1,6 +1,7 @@
 "use client"
 
 import FormReuseable from '@/app/_components/FormReuseable'
+import Toast from '@/app/_components/ui/toast'
 import { productImageId, productInfoObject } from '@/app/_state/atom/ProductState'
 import { productInputs, imageInputs } from '@/libs/formInputs'
 import { api } from '@/trpc/react'
@@ -21,7 +22,7 @@ export default function page() {
     const [images, setImages] = useState<Image[]>([])
     const [collectionTypeId, setCollectionTypeId] = useState("")
     const [uploadProduct, setUploadProduct] = useState(false)
-    const [toastOpen, setToastOpen] = useState(false)
+    const [imageOpen, setImageOpen] = useState(false)
 
     const [product, setProduct] = useState({
         title: "",
@@ -63,15 +64,18 @@ export default function page() {
                     id: data.id,
                     title: data.title
                 })
-                setToastOpen(true)
+                Toast({title:`${data.title} created successfully!!`})
             },
         })
     const { mutate: createImage } = api.image.createImage.useMutation({
         onSuccess(data) {
             setImageId(data.id)
-            console.log("image done", data)
+            setImageOpen(true)
+            Toast({title:`Image info created successfully!!`,description:"You can now upload you images"})
+            // console.log("image done", data)
         }
     })
+    const {mutate:createImageUrl} = api.image.createImageUrl.useMutation()
 
     const { data } = api.cc.getCollectionType.useQuery()
 
@@ -85,6 +89,12 @@ export default function page() {
             collectionTypeId: collectionTypeId,
             currency: product.currency
         })
+        setProduct({
+            title: "",
+            description: "",
+            price: 0,
+            currency: "",
+        })
     }
     // add image to DB
     const addColor = async () => {
@@ -94,9 +104,17 @@ export default function page() {
             productId: productInfo.id
         })
     }
+    const addimageUrl = async (key:string, url:string) => {
+        // console.log("started");
+        createImageUrl({
+         key,
+         url,
+         imageId
+        })
+    }
 
 
-    console.log(productInfo)
+    // console.log(data)
 
     return (
         <div>
@@ -119,6 +137,11 @@ export default function page() {
                     imageUpload={addColor}
                     changeColor={setImageProperty}
                     colorInput={imageInputs}
+                    imageOpen={imageOpen}
+                    setImageOpen={setImageOpen}
+                    product={product}
+                    imageProp={imageProps}
+                    fileUpload={addimageUrl}
                 />
             </section>
         </div>

@@ -22,17 +22,17 @@ type Props = {
 
 export default function Dropdown({ data, emptyText, setFunction, btnTitle }: Props) {
   return (
-    <Select>
+    <Select onValueChange={(e)=>setFunction(e)}>
       <SelectTrigger className="w-full my-4 p-8 rounded-[5px] focus-visible:outline-none  bg-gray-300 capitalize text-[2rem] font-semibold">
         <SelectValue  placeholder={btnTitle} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent >
         <SelectGroup>
           {/* <SelectLabel>Fruits</SelectLabel> */}
           {data ?
             data.map((coll: any) => {
               return (
-                <SelectItem key={coll.id} onClick={() => setFunction(coll.id)} value={coll.name} className='text-[1.8rem] font-semibold  border-b-2 border-gray-300 p-4 cursor-pointer'>{coll.name}</SelectItem>
+                <SelectItem key={coll.id} value={coll.id.toString()} className='text-[1.8rem] font-semibold  border-b-2 border-gray-300 p-4 cursor-pointer'>{coll.name}</SelectItem>
               )
             }) :
             <SelectItem value={emptyText} className='text-[1.8rem] font-semibold p-4'>{emptyText}</SelectItem>

@@ -22,4 +22,20 @@ export const imageRouter = createTRPCRouter({
         },
       });
     }),
+    createImageUrl: protectedProcedure
+    .input(
+      z.object({
+        key: z.string().min(2),
+        url: z?.string()?.min(1),
+        imageId : z?.string()?.min(1).optional(),
+      }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.imageUrl.createMany({
+        data: {
+         key:input.key,
+         url:input.url,
+         imageId: input.imageId
+        },
+      });
+    }),
 });
