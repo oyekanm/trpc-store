@@ -9,8 +9,9 @@ import React from 'react'
 export default function page() {
 
     const { data, isLoading } = api.product.getProduct.useQuery()
+    // const { data} = api.product.getSingleProduct.useQuery({id:"clssq2zet00076cx5nqks7ime"})
 
-    console.log(isLoading)
+    // console.log(data )
 
     return (
         <div>

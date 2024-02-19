@@ -6,7 +6,7 @@ import { productImageId, productInfoObject } from '@/app/_state/atom/ProductStat
 import { productInputs, imageInputs } from '@/libs/formInputs'
 import { api } from '@/trpc/react'
 // import { api } from '@/trpc/server'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 type Image = {
@@ -54,9 +54,10 @@ export default function page() {
         })
 
     }
+    const { data } = api.cc.getCollectionType.useQuery() 
+    const { data:getProduct,refetch:getSingleProduct} = api.product.getSingleProduct.useQuery({id:productInfo.id})
 
-
-    const { mutate: createProduct } = api.product.createProduct
+    const { mutate: createProduct} = api.product.createProduct
         .useMutation({
             onSuccess(data) {
                 setUploadProduct(true)
@@ -64,21 +65,68 @@ export default function page() {
                     id: data.id,
                     title: data.title
                 })
+                setProduct({
+                    title: "",
+                    description: "",
+                    price: 0,
+                    currency: "",
+                })
                 Toast({title:`${data.title} created successfully!!`})
             },
+            onError(error){
+                if(error?.data?.zodError?.fieldErrors){
+                    for (const [key, value] of Object.entries(error?.data?.zodError?.fieldErrors)) {
+                        console.log(`${key}: ${value}`);
+                        Toast({title:`${key}`,description:`${value}`})
+                      }
+                      
+                 
+                }
+            }
         })
+        // console.log(error)
     const { mutate: createImage } = api.image.createImage.useMutation({
         onSuccess(data) {
             setImageId(data.id)
             setImageOpen(true)
+            getSingleProduct()
             Toast({title:`Image info created successfully!!`,description:"You can now upload you images"})
             // console.log("image done", data)
+        },
+        onError(error){
+            // console.log(error.data)
+            if(error?.data?.zodError?.fieldErrors){
+                for (const [key, value] of Object.entries(error?.data?.zodError?.fieldErrors)) {
+                    console.log(`${key}: ${value}`);
+                    Toast({title:`${key}`,description:`${value}`,variant:"destructive"})
+                  }
+                  
+             
+            }
         }
     })
-    const {mutate:createImageUrl} = api.image.createImageUrl.useMutation()
+    const {mutate:createImageUrl} = api.image.createImageUrl.useMutation({
+        onSuccess(data) {
+            getSingleProduct()
+            Toast({title:`Image updated Successfully`})
+            // console.log("image done", data)
+        },
+        onError(error){
+            console.log(error.data)
+            // if(error?.data?.zodError?.fieldErrors){
+            //     for (const [key, value] of Object.entries(error?.data?.zodError?.fieldErrors)) {
+            //         console.log(`${key}: ${value}`);
+            //         Toast({title:`${key}`,description:`${value}`})
+            //       }
+                  
+             
+            // }
+        }
+    })
 
-    const { data } = api.cc.getCollectionType.useQuery()
-
+   useEffect(()=>{
+        getSingleProduct()
+    },[productInfo])
     const addProduct = async () => {
         // console.log("started");
 
@@ -89,12 +137,7 @@ export default function page() {
             collectionTypeId: collectionTypeId,
             currency: product.currency
         })
-        setProduct({
-            title: "",
-            description: "",
-            price: 0,
-            currency: "",
-        })
+        
     }
     // add image to DB
     const addColor = async () => {
@@ -104,13 +147,9 @@ export default function page() {
             productId: productInfo.id
         })
     }
-    const addimageUrl = async (key:string, url:string) => {
+    const addimageUrl = async (image:Image[]) => {
         // console.log("started");
-        createImageUrl({
-         key,
-         url,
-         imageId
-        })
+        createImageUrl(image)
     }
 
 
@@ -142,6 +181,7 @@ export default function page() {
                     product={product}
                     imageProp={imageProps}
                     fileUpload={addimageUrl}
+                    imageId={imageId}
                 />
             </section>
         </div>

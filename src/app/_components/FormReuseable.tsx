@@ -7,6 +7,7 @@ import "@uploadthing/react/styles.css";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogClose, } from '@/components/ui/dialog'
 import { Upload } from 'lucide-react'
 import React, { useState } from 'react'
+import { CarouselSize } from './ui/carouselImage';
 
 interface input {
     id: number,
@@ -14,6 +15,29 @@ interface input {
     type: string,
     placeholder: string,
     name: string
+}
+
+type image = {
+    color: string;
+    createdAt: string
+    file:  {   url: string; key: string;imageId: string;id: string }[]
+    id: string
+    productId: string
+    updatedAt: string
+}
+
+interface ProductData {
+    CollectionType: { name: string };
+    collectionTypeId: string;
+    createdAt: string;
+    currency: string;
+    description: string;
+    id: string;
+    image: image[];
+    price: number;
+    title: string;
+    updatedAt: string;
+    uploadStatus: string
 }
 
 type Props = {
@@ -31,28 +55,27 @@ type Props = {
     setImageOpen: (item: boolean) => void;
     product: any;
     imageProp: any;
-    fileUpload:(key:string, url:string) => void
+    fileUpload: (item: any) => void;
+    imageId: string;
+    productData?: ProductData | null;
+    collectionId: string,
+    addMore:(id:string)=>void
 }
 
 type ImageRes = {
     url: string;
     key: string;
-    name:string,
-    size:number;
-    serverData:{}
+    imageId: string
 }
 
 
 // Reusable form component 
 export default function FormReuseable(props: Props) {
-    const { inputs, uploaded, changeProduct, uploadFirst, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen,fileUpload } = props
-    const [image,setImage] = useState<{
-        url: string;
-        key: string;
-        name:string
-    }[]>([])
+    const { inputs, uploaded, changeProduct, uploadFirst, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen, fileUpload, imageId, collectionId, productData,addMore } = props
+    const [image, setImage] = useState<ImageRes[]>([])
 
-    console.log(image)
+
+    // console.log(collectionId)
     return (
         <div className='shadow-[0px_2px_10px_5px_rgba(201,201,201,0.47)] rounded-[.5rem] mt-[3rem]'>
             <div className='md:flex p-8 px-[3rem] gap-[3rem]'>
@@ -79,6 +102,7 @@ export default function FormReuseable(props: Props) {
                         emptyText='There are no collection-type at the moment'
                         data={data}
                         setFunction={dropDownSet}
+                        defaultValue={collectionId}
                     />
                     <button onClick={uploadFirst} className='send-btn mt-4'>Send</button>
                 </div>
@@ -110,41 +134,26 @@ export default function FormReuseable(props: Props) {
                                     </div>
                                 ))}
                             </div>
-                            {/* <div className="flex flex-col md:flex-row gap-4 mb-4" >
-                                <div className={`flex justify-start`}>
-                                    <UploadDropzone
-                                        endpoint="imageUploader"
-                                        onClientUploadComplete={(res: any) => {
-                                            // Do something with the response
-                                            if (res) {
-                                                const newImage = res.map((r: any) => {
-                                                    return {
-                                                        id: r.fileKey,
-                                                        url: r.fileUrl
-                                                    }
-                                                })
-                                                // setImage([...newImage, ...image])
-
-                                            }
-                                            console.log("Files: ", res);
-                                            // console.log(image);
-                                            // setIsUploading(false);
-                                            // alert("Upload Completed");
-                                        }}
-                                        onUploadError={(error: Error) => {
-                                            // Do something with the error.
-                                            console.log(`ERROR! ${error.message}`);
-                                        }}
-                                    />
-
-                                </div>
-                            </div> */}
                             <Button onClick={imageUpload} variant={'secondary'}>Send</Button>
+
+                            <article>
+                                {
+                                    productData?.image.map(img => {
+                                        return <div key={img.id}>
+                                            <p className='text-[2rem] font-bold capitalize'>{img.color}</p>
+                                            <div className='p-[1rem] flex items-center gap-8'>
+                                            <CarouselSize files={img.file} />
+                                            <Button onClick={()=>addMore(img.id)} variant={'secondary'}>Add more</Button>
+                                            </div>
+                                        </div>
+                                    })
+                                }
+                            </article>
                         </div>}
 
                 </div>
             </div>
-            <Dialog open={imageOpen} onOpenChange={()=>setImageOpen(false)}>
+            <Dialog open={imageOpen} onOpenChange={() => setImageOpen(false)}>
                 <DialogContent className='h-[60%] max-w-[600px]'>
                     <DialogHeader className='text-left'>
                         <DialogTitle className='text-[2rem]'>Upload your image</DialogTitle>
@@ -153,23 +162,24 @@ export default function FormReuseable(props: Props) {
                         </DialogDescription>
                         <div className={`flex justify-start w-full h-[50%] !mt-[2rem]`}>
                             <UploadDropzone
-                            className='w-full rounded-[5px]'
+                                className='w-full rounded-[5px]'
                                 endpoint="imageUploader"
                                 onClientUploadComplete={(res: any) => {
                                     // Do something with the response
                                     if (res) {
                                         const newImage = res.map((r: any) => {
-                                            fileUpload(r.key, r.url)
                                             return {
-                                                name: r.name,
+                                                // name: r.name,
                                                 url: r.url,
-                                                key: r.key
+                                                key: r.key,
+                                                imageId: imageId
                                             }
                                         })
+                                        fileUpload(newImage)
                                         setImage([...newImage, ...image])
 
+                                        console.log("Files: ", newImage);
                                     }
-                                    console.log("Files: ", res);
                                     // console.log(image);
                                     // setIsUploading(false);
                                     // alert("Upload Completed");

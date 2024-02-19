@@ -7,6 +7,6 @@ export const productInfoObject = atom({
     default: {} as info, // default value (aka initial value)
   });
 export const productImageId = atom({
-    key: 'product', // unique ID (with respect to other atoms/selectors)
+    key: 'productImageId', // unique ID (with respect to other atoms/selectors)
     default: "" as string, // default value (aka initial value)
   });

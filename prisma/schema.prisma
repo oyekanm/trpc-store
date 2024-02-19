@@ -49,7 +49,7 @@ model Product {
     image        Image[]
     description  String
     uploadStatus UploadStatus @default(PENDING)
-    currency     String
+    currency     String       @default("Naira")
     createdAt    DateTime     @default(now())
     updatedAt    DateTime     @updatedAt
 
