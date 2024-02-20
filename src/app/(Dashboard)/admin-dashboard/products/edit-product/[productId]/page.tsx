@@ -63,7 +63,7 @@ export default function page(props: Props) {
     const { data } = api.cc.getCollectionType.useQuery()
     const { data: getProduct, refetch: getSingleProduct, isLoading: productLoading } = api.product.getSingleProduct.useQuery({ id: productId })
 
-    console.log(getProduct)
+    // console.log(getProduct)
     const { mutate: createProduct } = api.product.createProduct
         .useMutation({
             onSuccess(data) {
@@ -97,6 +97,7 @@ export default function page(props: Props) {
             setImageId(data.id)
             setImageOpen(true)
             getSingleProduct()
+            setImageProps({color:""})
             Toast({ title: `Image info created successfully!!`, description: "You can now upload you images" })
             // console.log("image done", data)
         },
@@ -115,6 +116,7 @@ export default function page(props: Props) {
     const { mutate: createImageUrl } = api.image.createImageUrl.useMutation({
         onSuccess(data) {
             getSingleProduct()
+
             Toast({ title: `Image updated Successfully` })
             // console.log("image done", data)
         },
@@ -132,6 +134,7 @@ export default function page(props: Props) {
     })
 
     useEffect(() => {
+       
         if (getProduct) {
             setProduct({
                 currency: getProduct?.currency,
@@ -140,10 +143,14 @@ export default function page(props: Props) {
                 title: getProduct?.title
             })
             setCollectionTypeId(getProduct?.collectionTypeId || "")
+            setProductInfo({
+                id: getProduct.id,
+                title: getProduct.title
+            })
         }
     }, [getProduct])
 
-    console.log(collectionTypeId)
+    // console.log(collectionTypeId)
     const addProduct = async () => {
         // console.log("started");
 

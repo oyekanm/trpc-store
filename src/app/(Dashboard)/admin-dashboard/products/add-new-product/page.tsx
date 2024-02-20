@@ -151,6 +151,10 @@ export default function page() {
         // console.log("started");
         createImageUrl(image)
     }
+    const addMoreImage = (id:string)=>{
+        setImageOpen(true)
+        setImageId(id)
+    }
 
 
     // console.log(data)

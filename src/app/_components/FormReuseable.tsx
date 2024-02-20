@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { UploadDropzone } from '@/libs/uploadthing'
 import "@uploadthing/react/styles.css";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogClose, } from '@/components/ui/dialog'
-import { Upload } from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 import React, { useState } from 'react'
 import { CarouselSize } from './ui/carouselImage';
 
@@ -20,7 +20,7 @@ interface input {
 type image = {
     color: string;
     createdAt: string
-    file:  {   url: string; key: string;imageId: string;id: string }[]
+    file: { url: string; key: string; imageId: string; id: string }[]
     id: string
     productId: string
     updatedAt: string
@@ -59,7 +59,7 @@ type Props = {
     imageId: string;
     productData?: ProductData | null;
     collectionId: string,
-    addMore:(id:string)=>void
+    addMore: (id: string) => void
 }
 
 type ImageRes = {
@@ -71,7 +71,7 @@ type ImageRes = {
 
 // Reusable form component 
 export default function FormReuseable(props: Props) {
-    const { inputs, uploaded, changeProduct, uploadFirst, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen, fileUpload, imageId, collectionId, productData,addMore } = props
+    const { inputs, uploaded, changeProduct, uploadFirst, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen, fileUpload, imageId, collectionId, productData, addMore } = props
     const [image, setImage] = useState<ImageRes[]>([])
 
 
@@ -139,11 +139,18 @@ export default function FormReuseable(props: Props) {
                             <article>
                                 {
                                     productData?.image.map(img => {
-                                        return <div key={img.id}>
-                                            <p className='text-[2rem] font-bold capitalize'>{img.color}</p>
+                                        return <div key={img.id} >
                                             <div className='p-[1rem] flex items-center gap-8'>
-                                            <CarouselSize files={img.file} />
-                                            <Button onClick={()=>addMore(img.id)} variant={'secondary'}>Add more</Button>
+                                                <p className='text-[2rem] font-bold capitalize'>{img.color}</p>
+                                                <Button onClick={() => addMore(img.id)} variant="outline" size="icon">
+                                                    <Plus size={10} color="#000" />
+                                                </Button>
+                                            </div>
+                                            <div >
+                                                {img.file.length > 0 &&
+                                                    <CarouselSize files={img.file} />
+                                                }
+                                                {/* <Button onClick={() => addMore(img.id)} variant={'secondary'}>{img.file.length > 0 ? "Add more" : "Add Image"}</Button> */}
                                             </div>
                                         </div>
                                     })
@@ -178,7 +185,7 @@ export default function FormReuseable(props: Props) {
                                         fileUpload(newImage)
                                         setImage([...newImage, ...image])
 
-                                        console.log("Files: ", newImage);
+                                        // console.log("Files: ", newImage);
                                     }
                                     // console.log(image);
                                     // setIsUploading(false);

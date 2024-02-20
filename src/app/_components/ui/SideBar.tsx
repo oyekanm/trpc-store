@@ -7,7 +7,7 @@ function SideBar() {
     const link = `block text-white flex gap-[1rem] mb-[2rem] text-[2rem] capitalize items-center`
     // route.includes("/products")
     return (
-        <div className='bg-slate-700 w-full min-h-screen '>
+        <div className='bg-slate-700 w-full min-h-full '>
             <div className='text-center py-[20px] border-gray-500 border-b-[1px]'>
                 <p className='text-white text-[2rem] font-semibold'>fashion store</p>
             </div>

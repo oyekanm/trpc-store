@@ -98,7 +98,7 @@ model Image {
 model ImageUrl {
     id        String   @id @default(cuid())
     url       String   @unique
-    key       String
+    key       String   @unique
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
