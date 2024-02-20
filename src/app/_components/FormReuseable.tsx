@@ -59,7 +59,8 @@ type Props = {
     imageId: string;
     productData?: ProductData | null;
     collectionId: string,
-    addMore: (id: string) => void
+    addMore: (id: string) => void;
+    getSingle:()=>void
 }
 
 type ImageRes = {
@@ -71,7 +72,7 @@ type ImageRes = {
 
 // Reusable form component 
 export default function FormReuseable(props: Props) {
-    const { inputs, uploaded, changeProduct, uploadFirst, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen, fileUpload, imageId, collectionId, productData, addMore } = props
+    const { inputs, uploaded, changeProduct, uploadFirst, getSingle, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen, fileUpload, imageId, collectionId, productData, addMore } = props
     const [image, setImage] = useState<ImageRes[]>([])
 
 
@@ -148,7 +149,7 @@ export default function FormReuseable(props: Props) {
                                             </div>
                                             <div >
                                                 {img.file.length > 0 &&
-                                                    <CarouselSize files={img.file} />
+                                                    <CarouselSize files={img.file} refetch={getSingle} />
                                                 }
                                                 {/* <Button onClick={() => addMore(img.id)} variant={'secondary'}>{img.file.length > 0 ? "Add more" : "Add Image"}</Button> */}
                                             </div>

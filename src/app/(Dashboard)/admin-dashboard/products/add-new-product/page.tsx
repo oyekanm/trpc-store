@@ -86,12 +86,12 @@ export default function page() {
         })
         // console.log(error)
     const { mutate: createImage } = api.image.createImage.useMutation({
-        onSuccess(data) {
+      async onSuccess(data) {
             setImageId(data.id)
             setImageOpen(true)
             getSingleProduct()
             Toast({title:`Image info created successfully!!`,description:"You can now upload you images"})
-            // console.log("image done", data)
+            // await 
         },
         onError(error){
             // console.log(error.data)

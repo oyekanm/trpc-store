@@ -64,21 +64,15 @@ export default function page(props: Props) {
     const { data: getProduct, refetch: getSingleProduct, isLoading: productLoading } = api.product.getSingleProduct.useQuery({ id: productId })
 
     // console.log(getProduct)
-    const { mutate: createProduct } = api.product.createProduct
+    const { mutate: updateProduct } = api.product.updateProduct
         .useMutation({
             onSuccess(data) {
-                setUploadProduct(true)
+                getSingleProduct()
                 setProductInfo({
                     id: data.id,
                     title: data.title
                 })
-                setProduct({
-                    title: "",
-                    description: "",
-                    price: 0,
-                    currency: "",
-                })
-                Toast({ title: `${data.title} created successfully!!` })
+                Toast({ title: `${data.title} updated successfully!!` })
             },
             onError(error) {
                 if (error?.data?.zodError?.fieldErrors) {
@@ -154,7 +148,8 @@ export default function page(props: Props) {
     const addProduct = async () => {
         // console.log("started");
 
-        createProduct({
+        updateProduct({
+            id:productInfo.id,
             title: product.title,
             description: product.description,
             price: Number(product.price),
@@ -213,6 +208,7 @@ export default function page(props: Props) {
                     productData={getProduct}
                     collectionId={collectionTypeId}
                     addMore={addMoreImage}
+                    getSingle={getSingleProduct}
                 />}
             </section>
         </div>
