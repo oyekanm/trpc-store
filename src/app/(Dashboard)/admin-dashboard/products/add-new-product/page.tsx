@@ -197,6 +197,7 @@ export default function page() {
                     imageProp={imageProps}
                     fileUpload={addimageUrl}
                     imageId={imageId}
+                    
                 />
             </section>
         </div>

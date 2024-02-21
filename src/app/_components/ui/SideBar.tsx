@@ -1,4 +1,4 @@
-import { Boxes, LayoutDashboard, UtilityPole, Warehouse } from 'lucide-react'
+import { BadgeDollarSign, Boxes, LayoutDashboard, ListOrdered, ListOrderedIcon, UserRound, UtilityPole, Warehouse } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
@@ -25,13 +25,7 @@ function SideBar() {
                     </li>
 
                 </Link>
-                <Link href={`/${home}/utilities`} className={link}>
-                <UtilityPole />
-                    <li>
-                        Utility helpers
-                    </li>
-
-                </Link>
+                
                 <Link href={`/${home}/collections`} className={link}>
                 <Boxes />
                     <li>
@@ -39,15 +33,22 @@ function SideBar() {
                     </li>
 
                 </Link>
+                <Link href={`/${home}/utilities`} className={link}>
+                <UserRound />
+                    <li>
+                        Users
+                    </li>
+
+                </Link>
                 <Link href={`/${home}/collections`} className={link}>
-                <Boxes />
+                <ListOrdered />
                     <li>
                         Orders
                     </li>
 
                 </Link>
                 <Link href={`/${home}/collections`} className={link}>
-                <Boxes />
+                <BadgeDollarSign />
                     <li>
                         Transactions
                     </li>

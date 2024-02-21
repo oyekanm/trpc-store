@@ -68,11 +68,14 @@ model CollectionType {
     Product      Product[]
 }
 
-model Color {
+model Reviews {
     id        String   @id @default(cuid())
-    name      String   @unique
+    user      User     @relation(fields: [userId], references: [id])
+    comment   String
+    rating    Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    userId    String
 }
 
 model Category {
@@ -96,9 +99,9 @@ model Image {
 }
 
 model ImageUrl {
-    id        String   @id @default(cuid())
-    url       String   @unique
-    key       String   @unique
+    id  String @id @default(cuid())
+    url String @unique
+    key String @unique
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -140,6 +143,7 @@ model User {
     image         String?
     // accounts      Account[]
     // sessions      Session[]
+    Reviews       Reviews[]
 }
 
 model VerificationToken {

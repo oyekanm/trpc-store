@@ -44,18 +44,13 @@ type image = {
     updatedAt: string
 }
 
-
-
-
-
-
 export const ProductColumn: ColumnDef<Product>[] = [
     
     {
         accessorKey: "title",
         header: () => <span className="text-[1.6rem] font-bold ">Name</span>,
         cell: ({ row }) => {
-            const name = row.original.title;
+            const name = row.original?.title;
 
             return <span className=" font-medium text-[1.5rem] capitalize">{name}</span>
           },
@@ -64,7 +59,7 @@ export const ProductColumn: ColumnDef<Product>[] = [
         accessorKey: "CollectionType.name",
         header: "Collection-Type",
         cell: ({ row }) => {
-          const coll = row.original.CollectionType.name
+          const coll = row.original.CollectionType?.name ?? "none"
        
             return <span className=" font-medium text-[1.5rem]">{coll}</span>
           },
@@ -75,7 +70,7 @@ export const ProductColumn: ColumnDef<Product>[] = [
         cell: ({ row }) => {
             const status = row.original.uploadStatus
        
-            return <span className=" font-medium text-[1.5rem] lowercase">{status}</span>
+            return <span className={`font-medium text-[1.5rem] lowercase status ${status.toLowerCase()}`}>{status}</span>
           },
     },
     {
@@ -124,7 +119,7 @@ export const ProductColumn: ColumnDef<Product>[] = [
                     <Link className="text-[1.5rem] p-2 font-medium capitalize" href={`/admin-dashboard/products/edit-product/${payment.id}`}>Edit {payment.title}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={()=>mutate({id:payment.id})}>
-                    <span className="text-[1.5rem] p-2 font-medium capitalize">Delete {payment.title}</span>
+                     <span className="text-[1.5rem] p-2 font-medium capitalize">Delete {payment.title}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
