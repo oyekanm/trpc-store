@@ -4,10 +4,20 @@ import Dropdown from '@/app/_components/ui/dropdown'
 import { Button } from '@/components/ui/button'
 import { UploadDropzone } from '@/libs/uploadthing'
 import "@uploadthing/react/styles.css";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogClose, } from '@/components/ui/dialog'
-import { Plus, Upload } from 'lucide-react'
+import { ChevronDown, Loader2, Plus, Upload } from 'lucide-react'
 import React, { useState } from 'react'
 import { CarouselSize } from './ui/carouselImage';
+import { api } from '@/trpc/react';
+import Toast from './ui/toast';
 
 interface input {
     id: number,
@@ -45,7 +55,7 @@ type Props = {
     inputs: input[];
     colorInput?: input[];
     changeProduct: (e: React.ChangeEvent<HTMLInputElement>) => void
-    changeColor?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    changeColor?: (e: any) => void
     uploadFirst: () => void;
     id?: string,
     data: any,
@@ -60,7 +70,7 @@ type Props = {
     productData?: ProductData | null;
     collectionId: string,
     addMore: (id: string) => void;
-    getSingle:()=>void
+    getSingle: () => void
 }
 
 type ImageRes = {
@@ -72,8 +82,49 @@ type ImageRes = {
 
 // Reusable form component 
 export default function FormReuseable(props: Props) {
+    const [isEditing, setIsEditing] = useState(false)
+    const [imagesId, setImagesId] = useState("")
     const { inputs, uploaded, changeProduct, uploadFirst, getSingle, id, data, dropDownSet, imageUpload, changeColor, colorInput, imageOpen, imageProp, product, setImageOpen, fileUpload, imageId, collectionId, productData, addMore } = props
     const [image, setImage] = useState<ImageRes[]>([])
+
+    const editColor = (id: string, color: string) => {
+        setIsEditing(true)
+        setImagesId(id)
+        // [e.target.name]: e.target.value
+        const events = {
+            target: {
+                name: "color",
+                value: color
+            }
+        }
+        changeColor && changeColor(events)
+    }
+
+    const { mutate } = api.image.updateImage.useMutation({
+        onSuccess(data) {
+            // console.log(data)
+            setIsEditing(false)
+            getSingle()
+            setImagesId("")
+            Toast({ title: `${data.color} updated successfully!!` })
+            const events = {
+                target: {
+                    name: "color",
+                    value: ""
+                }
+            }
+            changeColor && changeColor(events)
+            // Toast({ title: `${data.title} deleted successfully!!` })
+        },
+    })
+    const { mutate: deleteImageColor, isLoading } = api.image.deleteImage.useMutation({
+        onSuccess(data) {
+            // console.log(data)
+            getSingle()
+            // Toast({ title: `${data.color} updated successfully!!` })
+            Toast({ title: `${data.color} deleted successfully!!` })
+        },
+    })
 
 
     // console.log(collectionId)
@@ -105,7 +156,9 @@ export default function FormReuseable(props: Props) {
                         setFunction={dropDownSet}
                         defaultValue={collectionId}
                     />
-                    <button onClick={uploadFirst} className='send-btn mt-4'>Send</button>
+                    {/* <button onClick={uploadFirst} className='send-btn mt-4'>Send</button> */}
+                    <Button onClick={uploadFirst} className='font-semibold text-[1.8rem] p-8 mt-8' variant={'secondary'} size={"lg"}>Send</Button>
+
                 </div>
 
                 {/* product Image upload */}
@@ -135,17 +188,49 @@ export default function FormReuseable(props: Props) {
                                     </div>
                                 ))}
                             </div>
-                            <Button onClick={imageUpload} variant={'secondary'}>Send</Button>
+                            <Button onClick={() => {
+                                if (isEditing) {
+                                    mutate({ color: imageProp.color, id: imagesId })
+                                } else {
+                                    imageUpload && imageUpload()
+                                }
+                            }} variant={'secondary'} className='font-semibold text-[1.8rem] p-8' size={"lg"}>Send</Button>
 
                             <article>
                                 {
                                     productData?.image.map(img => {
                                         return <div key={img.id} >
                                             <div className='p-[1rem] flex items-center gap-8'>
-                                                <p className='text-[2rem] font-bold capitalize'>{img.color}</p>
+                                                <p className='text-[2rem] font-bold capitalize flex items-center'>
+                                                    {img.color}
+                                                    <DropdownMenu >
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button disabled={img.id === imagesId} variant="ghost" className="h-8 w-8 p-0 " size="icon">
+                                                                <span className="sr-only">Open menu</span>
+                                                                <ChevronDown size={16} color="#000" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="w-[200px] p-4">
+
+                                                            {/* <DropdownMenuSeparator /> */}
+                                                            <DropdownMenuItem onClick={() => editColor(img.id, img.color)} >
+                                                                <span className="text-[1.5rem] p-2 font-medium capitalize" >Edit</span>
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() =>{
+                                                                 deleteImageColor({ id: img.id })
+                                                                 setImagesId(img.id)
+                                                            }}>
+                                                                <span className="text-[1.5rem] p-2 font-medium capitalize">Delete </span>
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </p>
                                                 <Button onClick={() => addMore(img.id)} variant="outline" size="icon">
                                                     <Plus size={10} color="#000" />
                                                 </Button>
+                                                {isLoading && img.id === imagesId && <div className='flex items-center justify-center'>
+                                                    <Loader2 className='h-8 w-8 animate-spin text-zinc-800' />
+                                                </div>}
                                             </div>
                                             <div >
                                                 {img.file.length > 0 &&

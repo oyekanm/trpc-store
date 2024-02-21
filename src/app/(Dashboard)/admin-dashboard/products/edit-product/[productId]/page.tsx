@@ -1,6 +1,7 @@
 "use client"
 
 import FormReuseable from '@/app/_components/FormReuseable'
+import HeaderCard from '@/app/_components/headerCard'
 import Toast from '@/app/_components/ui/toast'
 import { productImageId, productInfoObject } from '@/app/_state/atom/ProductState'
 import { imageInputs, productInputs } from '@/libs/formInputs'
@@ -60,10 +61,12 @@ export default function page(props: Props) {
         })
 
     }
+
+    // Trpc query calls
     const { data } = api.cc.getCollectionType.useQuery()
     const { data: getProduct, refetch: getSingleProduct, isLoading: productLoading } = api.product.getSingleProduct.useQuery({ id: productId })
 
-    // console.log(getProduct)
+    // TRpc mutation calls
     const { mutate: updateProduct } = api.product.updateProduct
         .useMutation({
             onSuccess(data) {
@@ -85,7 +88,6 @@ export default function page(props: Props) {
                 }
             }
         })
-    // console.log(error)
     const { mutate: createImage } = api.image.createImage.useMutation({
         onSuccess(data) {
             setImageId(data.id)
@@ -144,10 +146,8 @@ export default function page(props: Props) {
         }
     }, [getProduct])
 
-    // console.log(collectionTypeId)
+    
     const addProduct = async () => {
-        // console.log("started");
-
         updateProduct({
             id:productInfo.id,
             title: product.title,
@@ -156,21 +156,17 @@ export default function page(props: Props) {
             collectionTypeId: collectionTypeId,
             currency: product.currency
         })
-
     }
     // add image to DB
     const addColor = async () => {
-        // console.log("started");
         createImage({
             color: imageProps.color,
             productId: productInfo.id
         })
     }
     const addimageUrl = async (image: Image[]) => {
-        // console.log("started");
         createImageUrl(image)
     }
-
     const addMoreImage = (id:string)=>{
         setImageOpen(true)
         setImageId(id)
@@ -181,9 +177,8 @@ export default function page(props: Props) {
     return (
         <div>
             <section className='p-8'>
-                <div className='p-4 shadow-[2px_4px_10px_1px_rgba(201,201,201,0.47)] rounded-[.5rem]'>
-                    <p className='text-[2rem] color-primary capitalize '>Edit product {getProduct?.title}</p>
-                </div>
+            <HeaderCard btnTitle='Back to Products Page' text={`Edit product ${getProduct?.title ?? ""}`} href='/admin-dashboard/products' />
+
                 {productLoading && !getProduct && <div className='flex items-center justify-center mt-[50px]'>
                     <Loader2 className='h-12 w-12 animate-spin text-zinc-800' />
                 </div>}

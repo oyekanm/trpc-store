@@ -36,7 +36,7 @@ export const productRouter = createTRPCRouter({
         description: z.string().min(10),
         price: z.number().min(1),
         collectionTypeId: z?.string()?.min(1).optional(),
-        currency: z.string().min(3),
+        currency: z.string().min(3).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -46,7 +46,7 @@ export const productRouter = createTRPCRouter({
           description: input.description,
           price: input.price,
           collectionTypeId: input.collectionTypeId,
-          currency: input.currency,
+          currency: input?.currency,
           uploadStatus:"PROCESSING"
         },
       });
@@ -60,7 +60,7 @@ export const productRouter = createTRPCRouter({
         description: z.string().min(10),
         price: z.number().min(1),
         collectionTypeId: z?.string()?.min(1).optional(),
-        currency: z.string().min(3),
+        currency: z.string().min(3).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -73,7 +73,21 @@ export const productRouter = createTRPCRouter({
           description: input.description,
           price: input.price,
           collectionTypeId: input.collectionTypeId,
-          currency: input.currency,
+          currency: input?.currency,
+        },
+      });
+    }),
+    
+    deleteSingleProduct:protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(3),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.product.delete({
+        where: {
+          id: input.id,
         },
       });
     }),

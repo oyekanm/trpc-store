@@ -4,6 +4,7 @@ import FormReuseable from '@/app/_components/FormReuseable'
 import Toast from '@/app/_components/ui/toast'
 import { productImageId, productInfoObject } from '@/app/_state/atom/ProductState'
 import { productInputs, imageInputs } from '@/libs/formInputs'
+import { db } from '@/server/db'
 import { api } from '@/trpc/react'
 // import { api } from '@/trpc/server'
 import React, { useEffect, useState } from 'react'
@@ -54,10 +55,12 @@ export default function page() {
         })
 
     }
-    const { data } = api.cc.getCollectionType.useQuery() 
-    const { data:getProduct,refetch:getSingleProduct} = api.product.getSingleProduct.useQuery({id:productInfo.id})
+    // Trpc query and get calls
+    const { data } = api.cc.getCollectionType.useQuery()
+    const { data: getProduct, refetch: getSingleProduct } = api.product.getSingleProduct.useQuery({ id: productInfo.id })
 
-    const { mutate: createProduct} = api.product.createProduct
+    // Trpc mutation calls
+    const { mutate: createProduct } = api.product.createProduct
         .useMutation({
             onSuccess(data) {
                 setUploadProduct(true)
@@ -71,65 +74,72 @@ export default function page() {
                     price: 0,
                     currency: "",
                 })
-                Toast({title:`${data.title} created successfully!!`})
+                Toast({ title: `${data.title} created successfully!!` })
             },
-            onError(error){
-                if(error?.data?.zodError?.fieldErrors){
+            onError(error) {
+                if (error?.data?.zodError?.fieldErrors) {
                     for (const [key, value] of Object.entries(error?.data?.zodError?.fieldErrors)) {
                         console.log(`${key}: ${value}`);
-                        Toast({title:`${key}`,description:`${value}`})
-                      }
-                      
-                 
+                        Toast({ title: `${key}`, description: `${value}` })
+                    }
+
+
                 }
             }
         })
-        // console.log(error)
+    // console.log(error)
     const { mutate: createImage } = api.image.createImage.useMutation({
-      async onSuccess(data) {
+        async onSuccess(data) {
             setImageId(data.id)
             setImageOpen(true)
             getSingleProduct()
-            Toast({title:`Image info created successfully!!`,description:"You can now upload you images"})
-            // await 
+            const prod = await db.product.findFirst({
+                where: {
+                    id: productInfo.id
+                },
+            })
+            console.log(prod)
+            console.log("first")
+            Toast({ title: `Image info created successfully!!`, description: "You can now upload you images" })
         },
-        onError(error){
+        onError(error) {
             // console.log(error.data)
-            if(error?.data?.zodError?.fieldErrors){
+            if (error?.data?.zodError?.fieldErrors) {
                 for (const [key, value] of Object.entries(error?.data?.zodError?.fieldErrors)) {
                     console.log(`${key}: ${value}`);
-                    Toast({title:`${key}`,description:`${value}`,variant:"destructive"})
-                  }
-                  
-             
+                    Toast({ title: `${key}`, description: `${value}`, variant: "destructive" })
+                }
+
+
             }
         }
     })
-    const {mutate:createImageUrl} = api.image.createImageUrl.useMutation({
+    const { mutate: createImageUrl } = api.image.createImageUrl.useMutation({
         onSuccess(data) {
             getSingleProduct()
-            Toast({title:`Image updated Successfully`})
+            Toast({ title: `Image updated Successfully` })
             // console.log("image done", data)
         },
-        onError(error){
+        onError(error) {
             console.log(error.data)
             // if(error?.data?.zodError?.fieldErrors){
             //     for (const [key, value] of Object.entries(error?.data?.zodError?.fieldErrors)) {
             //         console.log(`${key}: ${value}`);
             //         Toast({title:`${key}`,description:`${value}`})
             //       }
-                  
-             
+
+
             // }
         }
     })
 
-   useEffect(()=>{
+    // get info of the product created to aid with creating images for the product
+    useEffect(() => {
         getSingleProduct()
-    },[productInfo])
-    const addProduct = async () => {
-        // console.log("started");
+    }, [productInfo])
 
+    // create a Product
+    const addProduct = async () => {
         createProduct({
             title: product.title,
             description: product.description,
@@ -137,21 +147,22 @@ export default function page() {
             collectionTypeId: collectionTypeId,
             currency: product.currency
         })
-        
+
     }
     // add image to DB
     const addColor = async () => {
-        // console.log("started");
         createImage({
             color: imageProps.color,
             productId: productInfo.id
         })
     }
-    const addimageUrl = async (image:Image[]) => {
+    // update the image with the url from the cloud
+    const addimageUrl = async (image: Image[]) => {
         // console.log("started");
         createImageUrl(image)
     }
-    const addMoreImage = (id:string)=>{
+    // function to open a modal to upload images
+    const addMoreImage = (id: string) => {
         setImageOpen(true)
         setImageId(id)
     }
