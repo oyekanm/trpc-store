@@ -31,7 +31,7 @@ export default function Dropdown({ data, emptyText, setFunction, btnTitle,defaul
       <SelectContent >
         <SelectGroup>
           {/* <SelectLabel>Fruits</SelectLabel> */}
-          {data ?
+          {data?.length > 0 ?
             data.map((coll: any) => {
               return (
                 <SelectItem key={coll.id} value={coll.id.toString()} className='text-[1.8rem] font-semibold  border-b-2 border-gray-300 p-4 cursor-pointer'>{coll.name}</SelectItem>

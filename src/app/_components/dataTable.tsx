@@ -17,6 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import React from "react"
+import { Delete, DeleteIcon, Trash } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -27,11 +29,20 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = React.useState({})
+
+  console.log(rowSelection)
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
+  
+    state: {
+      rowSelection,
+    },
   })
 
   return (
@@ -78,11 +89,14 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 p-4">
-        {/* <div className="flex-1 text-[1.4rem] text-muted-foreground">
+      <div className="flex items-center justify-end space-x-2 gap-4 p-4">
+          {rowSelection && <Button variant={"destructive"} className=" h-12">
+            <Trash  />
+          </Button>}
+        <div className="flex-1 text-[1.4rem] text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
+        </div>
         <div>
           <Button
             variant="outline"
@@ -104,6 +118,10 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
       </div>
+      {/* This action cannot be undone. This will permanently delete your
+            account and remove your data from our servers.
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Continue</AlertDialogAction> */}
     </div>
   )
 }

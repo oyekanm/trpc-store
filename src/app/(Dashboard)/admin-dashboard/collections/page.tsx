@@ -62,6 +62,7 @@ export default function page() {
       setCollectionType("")
       getCollectionType()
       Toast({ title: `${data.name} created successfully!!` })
+      setCollectionId("")
     },
     onError(error){
       if (error?.data?.zodError?.fieldErrors) {
@@ -92,6 +93,7 @@ export default function page() {
       getCollections()
       setIsEditing(false)
       Toast({ title: `${data.name} updated successfully!!` })
+      
     },
     onError(error){
       if (error?.data?.zodError?.fieldErrors) {
@@ -103,12 +105,16 @@ export default function page() {
     }
   })
 
+  // console.log(collectionId)
+  // console.log(collectionTypes!?.length === 0 )
+
   const { mutate: updateCollectionType, isLoading: collTypeUpdateLoading } = api.cc.updateCollectionType.useMutation({
     onSuccess(data) {
       setCollectionType("")
       getCollectionType()
       setIsEditing(false)
       Toast({ title: `${data.name} updated successfully!!` })
+      setCollectionId("")
     },
     onError(error){
       if (error?.data?.zodError?.fieldErrors) {
@@ -159,7 +165,7 @@ export default function page() {
             </div>
           </div>
 
-          <Button onClick={() => setCollectionOpen(true)} variant="ghost" className="h-8 w-8 p-0 ">
+          <Button disabled={collections!?.length === 0} onClick={() => setCollectionOpen(true)} variant="ghost" className="h-8 w-8 p-0 ">
             <MoreHorizontal className="h-12 w-12" />
           </Button>
           <Drawer open={collectionOpen} onClose={() => setCollectionOpen(false)}>
@@ -188,7 +194,7 @@ export default function page() {
                             setCollection(coll.name)
                             setCollectionOpen(false)
                           }} >
-                            <Button variant="ghost" >
+                            <Button disabled={collectionDeleteLoading} variant="ghost" >
                               <span className="text-[1.5rem] p-2 font-medium capitalize" >Edit</span>
                             </Button>
                           </DropdownMenuItem>
@@ -248,7 +254,7 @@ export default function page() {
             </div>
           </div>
 
-          <Button onClick={() => setCollectionTypeOpen(true)} variant="ghost" className="h-8 w-8 p-0 ">
+          <Button disabled={collectionTypes!?.length === 0 ? true :false} onClick={() => setCollectionTypeOpen(true)} variant="ghost" className="h-8 w-8 p-0 ">
             <MoreHorizontal className="h-12 w-12" />
           </Button>
           <Drawer open={collectionTypeOpen} onClose={() => setCollectionOpen(false)}>
@@ -279,7 +285,7 @@ export default function page() {
                             setCollectionId(coll?.collectionId??"")
                             // console.log(coll.collectionId)
                           }} >
-                            <Button variant="ghost">
+                            <Button disabled={collTypeDeleteLoading} variant="ghost">
                               <span className="text-[1.5rem] p-2 font-medium capitalize" >Edit</span>
                             </Button>
                           </DropdownMenuItem>

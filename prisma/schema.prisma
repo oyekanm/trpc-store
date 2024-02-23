@@ -32,13 +32,13 @@ model Collection {
 enum UploadStatus {
     PENDING
     PROCESSING
-    FAILED
     SUCCESS
 }
 
 enum OrderStatus {
     PENDING
     FAILED
+    PROCESSING
     COMPLETED
 }
 
@@ -109,6 +109,22 @@ model ImageUrl {
     imageId   String?
 }
 
+model CartItem {
+    id      String  @id @default(cuid())
+    Order   Order?  @relation(fields: [orderId], references: [id])
+    orderId String?
+}
+
+model Order {
+    id           String      @id @default(cuid())
+    user         User        @relation(fields: [userId], references: [id])
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+    userId       String
+    orderedItems CartItem[]
+    status       OrderStatus
+}
+
 // model Account {
 //     id                String  @id @default(cuid())
 //     userId            String
@@ -144,6 +160,7 @@ model User {
     // accounts      Account[]
     // sessions      Session[]
     Reviews       Reviews[]
+    Order         Order[]
 }
 
 model VerificationToken {
